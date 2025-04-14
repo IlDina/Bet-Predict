@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetPredict - Privacy Policy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="betpredictlogo.png" alt="BetPredict Logo" class="logo">
+                <h1 class="site-title">BetPredict</h1>
+            </div>
+            <div class="nav-links">
+                <a href="home.html" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Abbonamenti</a>
+                <a href="#" class="nav-link">Pronostici</a>
+                <a href="#" class="nav-link">Pronostici Free</a>
+                <a href="#" class="nav-link">Storico</a>
+                <a href="#" class="nav-link">Contatti</a>
+                <a href="#" class="accedi-btn">Accedi</a>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <section class="content-section">
+            <div class="container">
+                <h1 class="page-title">Privacy Policy</h1>
+                <div class="policy-content">
+                    <h2>Informativa sulla Privacy</h2>
+                    <p>Ultima modifica: 01/07/2023</p>
+                    
+                    <h3>1. Introduzione</h3>
+                    <p>BetPredict rispetta la tua privacy e si impegna a proteggerla attraverso il rispetto di questa policy.</p>
+                    
+                    <h3>2. Informazioni che raccogliamo</h3>
+                    <p>Raccogliamo diversi tipi di informazioni da e sui nostri utenti, incluse informazioni:</p>
+                    <ul>
+                        <li>Con cui puoi essere personalmente identificato, come nome, indirizzo email, o altri identificatori ("dati personali");</li>
+                        <li>Relative alla tua connessione Internet, come indirizzo IP, browser utilizzato e tempi di accesso;</li>
+                        <li>Sulle tue preferenze e comportamenti sul nostro sito.</li>
+                    </ul>
+                    
+                    <h3>3. Come utilizziamo le tue informazioni</h3>
+                    <p>Utilizziamo le informazioni che raccogliamo su di te o che ci fornisci per:</p>
+                    <ul>
+                        <li>Fornirti il nostro servizio;</li>
+                        <li>Adempiere alle finalità per cui le hai fornite;</li>
+                        <li>Fornirti notifiche sulle modifiche al nostro servizio;</li>
+                        <li>Migliorare il nostro sito web e i nostri servizi.</li>
+                    </ul>
+                    
+                    <h3>4. Cookie</h3>
+                    <p>Utilizziamo i cookie per migliorare l'esperienza degli utenti sul nostro sito. Puoi impostare il tuo browser per rifiutare tutti o alcuni cookie, o per avvisarti quando i siti web impostano o accedono ai cookie.</p>
+                    
+                    <h3>5. Divulgazione dei tuoi dati</h3>
+                    <p>Non vendiamo, scambiamo o trasferiamo in altro modo a terzi le tue informazioni personali identificabili senza il tuo consenso, eccetto come descritto in questa Policy.</p>
+                    
+                    <h3>6. Sicurezza dei dati</h3>
+                    <p>Abbiamo implementato misure progettate per proteggere le tue informazioni personali da perdita accidentale e dall'accesso, uso, alterazione e divulgazione non autorizzati.</p>
+                    
+                    <h3>7. Contatti</h3>
+                    <p>Per qualsiasi domanda o preoccupazione riguardante questa Privacy Policy, contattaci all'indirizzo: privacy@betpredict.it</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>BetPredict</h3>
+                <p>Il tuo partner affidabile per i pronostici sportivi</p>
+            </div>
+            <div class="footer-links">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="termini-condizioni.html">Termini e Condizioni</a></li>
+                    <li><a href="#">Contattaci</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-overlay" class="cookie-overlay">
+        <div id="cookie-consent" class="cookie-banner">
+            <div class="cookie-content">
+                <h3>Informativa sui Cookie</h3>
+                <p>Utilizziamo i cookie per migliorare la tua esperienza sul nostro sito. I cookie sono essenziali per il funzionamento del sito e per offrirti un servizio personalizzato.</p>
+                <p>Continuando a navigare, accetti la nostra <a href="privacy-policy.html">Privacy Policy</a> e l'utilizzo dei cookie. Per saperne di più su come utilizziamo i cookie, consulta la nostra informativa sulla privacy.</p>
+                <div class="cookie-buttons">
+                    <button id="accept-cookies" class="cookie-btn accept">Accetta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Cookie Consent -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user has already accepted cookies
+            if (!localStorage.getItem('cookieConsent')) {
+                document.getElementById('cookie-overlay').style.display = 'flex';
+                document.body.classList.add('no-scroll');
+            }
+
+            // Accept cookies
+            document.getElementById('accept-cookies').addEventListener('click', function() {
+                localStorage.setItem('cookieConsent', 'accepted');
+                document.getElementById('cookie-overlay').style.display = 'none';
+                document.body.classList.remove('no-scroll');
+            });
+        });
+    </script>
+</body>
+</html> 

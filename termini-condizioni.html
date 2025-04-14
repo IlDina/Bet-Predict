@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetPredict - Termini e Condizioni</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="betpredictlogo.png" alt="BetPredict Logo" class="logo">
+                <h1 class="site-title">BetPredict</h1>
+            </div>
+            <div class="nav-links">
+                <a href="home.html" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Abbonamenti</a>
+                <a href="#" class="nav-link">Pronostici</a>
+                <a href="#" class="nav-link">Pronostici Free</a>
+                <a href="#" class="nav-link">Storico</a>
+                <a href="#" class="nav-link">Contatti</a>
+                <a href="#" class="accedi-btn">Accedi</a>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <section class="content-section">
+            <div class="container">
+                <h1 class="page-title">Termini e Condizioni</h1>
+                <div class="policy-content">
+                    <h2>Condizioni di Utilizzo</h2>
+                    <p>Ultimo aggiornamento: 01/07/2023</p>
+                    
+                    <h3>1. Accettazione dei Termini</h3>
+                    <p>Utilizzando il nostro sito web, accetti integralmente i presenti Termini e Condizioni. Se non accetti questi termini, ti preghiamo di non utilizzare il nostro sito.</p>
+                    
+                    <h3>2. Modifiche ai Termini</h3>
+                    <p>Ci riserviamo il diritto di modificare o aggiornare questi Termini in qualsiasi momento. Le modifiche entrano in vigore immediatamente dopo la pubblicazione sul sito. L'uso continuato del servizio dopo tali modifiche costituisce l'accettazione dei nuovi Termini.</p>
+                    
+                    <h3>3. Utilizzo del Servizio</h3>
+                    <p>I nostri servizi sono destinati a utenti maggiorenni. Utilizzando i nostri servizi, confermi di avere almeno 18 anni.</p>
+                    <p>Ti impegni a utilizzare il nostro servizio solo per scopi legali e in conformità con questi Termini.</p>
+                    
+                    <h3>4. Account</h3>
+                    <p>Quando crei un account sul nostro sito, devi fornire informazioni accurate, complete e aggiornate. Sei responsabile del mantenimento della riservatezza del tuo account e password e di limitare l'accesso al tuo computer.</p>
+                    
+                    <h3>5. Contenuti</h3>
+                    <p>Le previsioni e i pronostici sportivi forniti sul nostro sito hanno uno scopo puramente informativo e di intrattenimento. Non garantiamo l'accuratezza di nessuna previsione e non ci assumiamo la responsabilità per le decisioni prese sulla base dei nostri contenuti.</p>
+                    
+                    <h3>6. Limitazione di Responsabilità</h3>
+                    <p>In nessun caso BetPredict sarà responsabile per danni diretti, indiretti, incidentali, speciali o consequenziali derivanti dall'uso o dall'impossibilità di utilizzare i nostri servizi.</p>
+                    
+                    <h3>7. Proprietà Intellettuale</h3>
+                    <p>Tutti i contenuti presenti sul sito, inclusi testi, grafica, logo, immagini e software, sono di proprietà di BetPredict e sono protetti dalle leggi sul copyright.</p>
+                    
+                    <h3>8. Legge Applicabile</h3>
+                    <p>Questi Termini sono regolati e interpretati in conformità con le leggi italiane.</p>
+                    
+                    <h3>9. Contatti</h3>
+                    <p>Per qualsiasi domanda riguardante questi Termini e Condizioni, contattaci all'indirizzo: info@betpredict.it</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>BetPredict</h3>
+                <p>Il tuo partner affidabile per i pronostici sportivi</p>
+            </div>
+            <div class="footer-links">
+                <h4>Link Utili</h4>
+                <ul>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="termini-condizioni.html">Termini e Condizioni</a></li>
+                    <li><a href="#">Contattaci</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-overlay" class="cookie-overlay">
+        <div id="cookie-consent" class="cookie-banner">
+            <div class="cookie-content">
+                <h3>Informativa sui Cookie</h3>
+                <p>Utilizziamo i cookie per migliorare la tua esperienza sul nostro sito. I cookie sono essenziali per il funzionamento del sito e per offrirti un servizio personalizzato.</p>
+                <p>Continuando a navigare, accetti la nostra <a href="privacy-policy.html">Privacy Policy</a> e l'utilizzo dei cookie. Per saperne di più su come utilizziamo i cookie, consulta la nostra informativa sulla privacy.</p>
+                <div class="cookie-buttons">
+                    <button id="accept-cookies" class="cookie-btn accept">Accetta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Cookie Consent -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user has already accepted cookies
+            if (!localStorage.getItem('cookieConsent')) {
+                document.getElementById('cookie-overlay').style.display = 'flex';
+                document.body.classList.add('no-scroll');
+            }
+
+            // Accept cookies
+            document.getElementById('accept-cookies').addEventListener('click', function() {
+                localStorage.setItem('cookieConsent', 'accepted');
+                document.getElementById('cookie-overlay').style.display = 'none';
+                document.body.classList.remove('no-scroll');
+            });
+        });
+    </script>
+</body>
+</html> 
