@@ -18,23 +18,36 @@ try {
     die("Errore di connessione al database: " . $e->getMessage());
 }
 
-// Ottieni statistiche utenti
-$stmt = $conn->query("SELECT COUNT(*) as total_users FROM users");
-$total_users = $stmt->fetch()['total_users'];
+// Recupera le statistiche degli utenti
+$stmt = $conn->query("
+    SELECT 
+        COUNT(*) as total_users,
+        SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active_users,
+        SUM(CASE WHEN failed_login_attempts >= 5 THEN 1 ELSE 0 END) as blocked_users,
+        SUM(CASE WHEN last_login >= datetime('now', '-1 day') THEN 1 ELSE 0 END) as daily_active_users
+    FROM users
+");
+$user_stats = $stmt->fetch();
 
-$stmt = $conn->query("SELECT COUNT(*) as active_users FROM users WHERE is_active = 1");
-$active_users = $stmt->fetch()['active_users'];
+// Recupera le statistiche dei pronostici
+$stmt = $conn->query("
+    SELECT 
+        COUNT(*) as total_predictions,
+        SUM(CASE WHEN status = 'won' THEN 1 ELSE 0 END) as won_predictions,
+        SUM(CASE WHEN status = 'lost' THEN 1 ELSE 0 END) as lost_predictions,
+        SUM(CASE WHEN type = 'premium' THEN 1 ELSE 0 END) as premium_predictions
+    FROM predictions
+");
+$prediction_stats = $stmt->fetch();
 
-$stmt = $conn->query("SELECT COUNT(*) as new_users FROM users WHERE created_at >= datetime('now', '-7 days')");
-$new_users = $stmt->fetch()['new_users'];
+// Calcola le percentuali
+$win_rate = $prediction_stats['total_predictions'] > 0 
+    ? round(($prediction_stats['won_predictions'] / $prediction_stats['total_predictions']) * 100, 2) 
+    : 0;
 
-// Ottieni ultimi utenti registrati
-$stmt = $conn->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 5");
-$recent_users = $stmt->fetchAll();
-
-// Ottieni utenti con più tentativi falliti
-$stmt = $conn->query("SELECT * FROM users WHERE failed_login_attempts > 0 ORDER BY failed_login_attempts DESC LIMIT 5");
-$failed_logins = $stmt->fetchAll();
+$premium_rate = $prediction_stats['total_predictions'] > 0 
+    ? round(($prediction_stats['premium_predictions'] / $prediction_stats['total_predictions']) * 100, 2) 
+    : 0;
 ?>
 
 <!DOCTYPE html>
@@ -42,10 +55,11 @@ $failed_logins = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - BetPredict</title>
+    <title>Statistiche - BetPredict</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Copia tutti gli stili dalla dashboard */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -176,7 +190,7 @@ $failed_logins = $stmt->fetchAll();
             background-color: #c0392b;
         }
 
-        /* Stats Cards */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -188,33 +202,35 @@ $failed_logins = $stmt->fetchAll();
             background-color: var(--light-bg);
             padding: 1.5rem;
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            text-align: center;
         }
 
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .stat-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-card .trend {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .stat-icon.users { background-color: rgba(46, 204, 113, 0.2); color: var(--success-color); }
-        .stat-icon.active { background-color: rgba(52, 152, 219, 0.2); color: var(--secondary-color); }
-        .stat-icon.new { background-color: rgba(241, 196, 15, 0.2); color: var(--warning-color); }
-
-        .stat-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-info p {
-            color: var(--text-muted);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
             font-size: 0.9rem;
+        }
+
+        .trend.up {
+            color: var(--success-color);
+        }
+
+        .trend.down {
+            color: var(--danger-color);
         }
 
         /* Tables */
@@ -228,15 +244,7 @@ $failed_logins = $stmt->fetchAll();
         .table-title {
             font-size: 1.2rem;
             margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-title a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
+            color: var(--text-color);
         }
 
         table {
@@ -256,50 +264,14 @@ $failed_logins = $stmt->fetchAll();
             font-size: 0.9rem;
         }
 
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+        td {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .percentage {
+            color: var(--text-muted);
             font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-active {
-            background-color: rgba(46, 204, 113, 0.2);
-            color: var(--success-color);
-        }
-
-        .status-inactive {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: var(--danger-color);
-        }
-
-        .action-btn {
-            padding: 0.3rem 0.8rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-        }
-
-        .btn-edit {
-            background-color: rgba(52, 152, 219, 0.2);
-            color: var(--secondary-color);
-        }
-
-        .btn-delete {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: var(--danger-color);
-        }
-
-        .btn-edit:hover {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: var(--danger-color);
-            color: white;
         }
     </style>
 </head>
@@ -314,7 +286,7 @@ $failed_logins = $stmt->fetchAll();
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="admin-dashboard.php" class="nav-link active">
+                        <a href="admin-dashboard.php" class="nav-link">
                             <i class="fas fa-home"></i>
                             Dashboard
                         </a>
@@ -326,7 +298,7 @@ $failed_logins = $stmt->fetchAll();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="admin-statistics.php" class="nav-link">
+                        <a href="admin-statistics.php" class="nav-link active">
                             <i class="fas fa-chart-line"></i>
                             Statistiche
                         </a>
@@ -350,7 +322,7 @@ $failed_logins = $stmt->fetchAll();
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <h1 class="page-title">Dashboard</h1>
+                <h1 class="page-title">Statistiche</h1>
                 <div class="user-info">
                     <img src="admin-avatar.png" alt="Admin Avatar">
                     <form action="admin-login.php" method="post">
@@ -361,111 +333,54 @@ $failed_logins = $stmt->fetchAll();
                 </div>
             </header>
 
-            <!-- Stats Grid -->
+            <!-- User Statistics -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon users">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $total_users ?></h3>
-                        <p>Utenti Totali</p>
-                    </div>
+                    <h3><?= $user_stats['total_users'] ?></h3>
+                    <p>Utenti Totali</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon active">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $active_users ?></h3>
-                        <p>Utenti Attivi</p>
-                    </div>
+                    <h3><?= $user_stats['active_users'] ?></h3>
+                    <p>Utenti Attivi</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon new">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $new_users ?></h3>
-                        <p>Nuovi Utenti (7 giorni)</p>
-                    </div>
+                    <h3><?= $user_stats['blocked_users'] ?></h3>
+                    <p>Utenti Bloccati</p>
+                </div>
+                <div class="stat-card">
+                    <h3><?= $user_stats['daily_active_users'] ?></h3>
+                    <p>Utenti Attivi Oggi</p>
                 </div>
             </div>
 
-            <!-- Recent Users Table -->
-            <div class="table-container">
-                <div class="table-title">
-                    <h2>Ultimi Utenti Registrati</h2>
-                    <a href="#">Vedi tutti</a>
+            <!-- Prediction Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3><?= $prediction_stats['total_predictions'] ?></h3>
+                    <p>Pronostici Totali</p>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Data Registrazione</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($recent_users as $user): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($user['username']) ?></td>
-                            <td><?= htmlspecialchars($user['email']) ?></td>
-                            <td><?= date('d/m/Y H:i', strtotime($user['created_at'])) ?></td>
-                            <td>
-                                <span class="status-badge <?= $user['is_active'] ? 'status-active' : 'status-inactive' ?>">
-                                    <?= $user['is_active'] ? 'Attivo' : 'Inattivo' ?>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn btn-edit">Modifica</button>
-                                <button class="action-btn btn-delete">Elimina</button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Failed Logins Table -->
-            <div class="table-container">
-                <div class="table-title">
-                    <h2>Tentativi di Login Falliti</h2>
-                    <a href="#">Vedi tutti</a>
+                <div class="stat-card">
+                    <h3><?= $prediction_stats['won_predictions'] ?></h3>
+                    <p>Pronostici Vinti</p>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span><?= $win_rate ?>%</span>
+                    </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Tentativi Falliti</th>
-                            <th>Ultimo Tentativo</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($failed_logins as $user): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($user['username']) ?></td>
-                            <td><?= $user['failed_login_attempts'] ?></td>
-                            <td><?= $user['last_failed_login'] ? date('d/m/Y H:i', strtotime($user['last_failed_login'])) : 'N/A' ?></td>
-                            <td>
-                                <span class="status-badge <?= $user['is_active'] ? 'status-active' : 'status-inactive' ?>">
-                                    <?= $user['is_active'] ? 'Attivo' : 'Inattivo' ?>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn btn-edit">Sblocca</button>
-                                <button class="action-btn btn-delete">Disattiva</button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                <div class="stat-card">
+                    <h3><?= $prediction_stats['lost_predictions'] ?></h3>
+                    <p>Pronostici Persi</p>
+                </div>
+                <div class="stat-card">
+                    <h3><?= $prediction_stats['premium_predictions'] ?></h3>
+                    <p>Pronostici Premium</p>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span><?= $premium_rate ?>%</span>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 </body>
-</html>
+</html> 

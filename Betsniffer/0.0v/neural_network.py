@@ -2,6 +2,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 import sqlite3
+import os
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
@@ -24,7 +25,9 @@ def is_over_2_5(result):
         return 0
 
 def prepare_data():
-    conn = sqlite3.connect("matches.db")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, "matches.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT team1, team2, result, date FROM matches")
     data = cursor.fetchall()
@@ -206,16 +209,22 @@ def menu_previsioni(model, label_encoder):
 # --- MAIN ---
 
 if __name__ == "__main__":
-    X, y, label_encoder, sample_weights = prepare_data()
-    X_train, X_test, y_train, y_test, sw_train, sw_test = train_test_split(
-        X, y, sample_weights, test_size=0.2, random_state=42
-    )
+    try:
+        X, y, label_encoder, sample_weights = prepare_data()
+        X_train, X_test, y_train, y_test, sw_train, sw_test = train_test_split(
+            X, y, sample_weights, test_size=0.2, random_state=42
+        )
 
-    num_teams = len(label_encoder.classes_)
-    model = build_model_with_embedding(num_teams)
-    model.fit(X_train, y_train, epochs=100, batch_size=128, verbose=1, validation_data=(X_test, y_test), sample_weight=sw_train)
+        num_teams = len(label_encoder.classes_)
+        model = build_model_with_embedding(num_teams)
+        model.fit(X_train, y_train, epochs=100, batch_size=128, verbose=1, validation_data=(X_test, y_test), sample_weight=sw_train)
 
-    loss, acc = model.evaluate(X_test, y_test, verbose=0)
-    print(f"\nAccuratezza su test: {acc:.2%}")
+        loss, acc = model.evaluate(X_test, y_test, verbose=0)
+        print(f"\nAccuratezza su test: {acc:.2%}")
 
-    menu_previsioni(model, label_encoder)
+        menu_previsioni(model, label_encoder)
+    except Exception as e:
+        print(f"Errore durante l'esecuzione dello script: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(252)

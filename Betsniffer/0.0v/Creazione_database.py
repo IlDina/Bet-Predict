@@ -2,10 +2,12 @@ import sqlite3
 import os
 
 # Verifica se il database esiste
-db_exists = os.path.exists("matches.db")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(script_dir, "matches.db")
+db_exists = os.path.exists(db_path)
 
 # Creazione della connessione e del database
-conn = sqlite3.connect("matches.db")
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 if not db_exists:
@@ -66,7 +68,8 @@ def importa_partite_da_file(filepath):
     return partite, squadre
 
 # --- Importazione dati dal file ---
-matches, squadre = importa_partite_da_file("datapartite.txt")
+datafile_path = os.path.join(script_dir, "datapartite.txt")
+matches, squadre = importa_partite_da_file(datafile_path)
 teams = [(team,) for team in squadre]
 
 # Inserimento squadre nel database

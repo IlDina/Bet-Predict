@@ -18,23 +18,28 @@ try {
     die("Errore di connessione al database: " . $e->getMessage());
 }
 
-// Ottieni statistiche utenti
-$stmt = $conn->query("SELECT COUNT(*) as total_users FROM users");
-$total_users = $stmt->fetch()['total_users'];
+// Gestione delle azioni
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST["update_user_status"])) {
+        $stmt = $conn->prepare("
+            UPDATE users 
+            SET is_active = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ");
+        $stmt->execute([$_POST["status"], $_POST["user_id"]]);
+    } elseif (isset($_POST["reset_login_attempts"])) {
+        $stmt = $conn->prepare("
+            UPDATE users 
+            SET failed_login_attempts = 0, last_failed_login = NULL, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ");
+        $stmt->execute([$_POST["user_id"]]);
+    }
+}
 
-$stmt = $conn->query("SELECT COUNT(*) as active_users FROM users WHERE is_active = 1");
-$active_users = $stmt->fetch()['active_users'];
-
-$stmt = $conn->query("SELECT COUNT(*) as new_users FROM users WHERE created_at >= datetime('now', '-7 days')");
-$new_users = $stmt->fetch()['new_users'];
-
-// Ottieni ultimi utenti registrati
-$stmt = $conn->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 5");
-$recent_users = $stmt->fetchAll();
-
-// Ottieni utenti con più tentativi falliti
-$stmt = $conn->query("SELECT * FROM users WHERE failed_login_attempts > 0 ORDER BY failed_login_attempts DESC LIMIT 5");
-$failed_logins = $stmt->fetchAll();
+// Recupera tutti gli utenti
+$stmt = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
+$users = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -42,10 +47,11 @@ $failed_logins = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - BetPredict</title>
+    <title>Gestione Utenti - BetPredict</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Copia tutti gli stili dalla dashboard */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -176,67 +182,12 @@ $failed_logins = $stmt->fetchAll();
             background-color: #c0392b;
         }
 
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background-color: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .stat-icon.users { background-color: rgba(46, 204, 113, 0.2); color: var(--success-color); }
-        .stat-icon.active { background-color: rgba(52, 152, 219, 0.2); color: var(--secondary-color); }
-        .stat-icon.new { background-color: rgba(241, 196, 15, 0.2); color: var(--warning-color); }
-
-        .stat-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-info p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Tables */
+        /* Table */
         .table-container {
             background-color: var(--light-bg);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-        }
-
-        .table-title {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-title a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
         }
 
         table {
@@ -280,6 +231,7 @@ $failed_logins = $stmt->fetchAll();
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.8rem;
+            margin-right: 0.5rem;
         }
 
         .btn-edit {
@@ -314,13 +266,13 @@ $failed_logins = $stmt->fetchAll();
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="admin-dashboard.php" class="nav-link active">
+                        <a href="admin-dashboard.php" class="nav-link">
                             <i class="fas fa-home"></i>
                             Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="admin-users.php" class="nav-link">
+                        <a href="admin-users.php" class="nav-link active">
                             <i class="fas fa-users"></i>
                             Utenti
                         </a>
@@ -350,7 +302,7 @@ $failed_logins = $stmt->fetchAll();
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <h1 class="page-title">Dashboard</h1>
+                <h1 class="page-title">Gestione Utenti</h1>
                 <div class="user-info">
                     <img src="admin-avatar.png" alt="Admin Avatar">
                     <form action="admin-login.php" method="post">
@@ -361,104 +313,48 @@ $failed_logins = $stmt->fetchAll();
                 </div>
             </header>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon users">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $total_users ?></h3>
-                        <p>Utenti Totali</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon active">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $active_users ?></h3>
-                        <p>Utenti Attivi</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon new">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3><?= $new_users ?></h3>
-                        <p>Nuovi Utenti (7 giorni)</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Users Table -->
             <div class="table-container">
-                <div class="table-title">
-                    <h2>Ultimi Utenti Registrati</h2>
-                    <a href="#">Vedi tutti</a>
-                </div>
                 <table>
                     <thead>
                         <tr>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Data Registrazione</th>
+                            <th>Ultimo Accesso</th>
+                            <th>Tentativi Falliti</th>
                             <th>Stato</th>
                             <th>Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($recent_users as $user): ?>
+                        <?php foreach ($users as $user): ?>
                         <tr>
                             <td><?= htmlspecialchars($user['username']) ?></td>
                             <td><?= htmlspecialchars($user['email']) ?></td>
                             <td><?= date('d/m/Y H:i', strtotime($user['created_at'])) ?></td>
-                            <td>
-                                <span class="status-badge <?= $user['is_active'] ? 'status-active' : 'status-inactive' ?>">
-                                    <?= $user['is_active'] ? 'Attivo' : 'Inattivo' ?>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn btn-edit">Modifica</button>
-                                <button class="action-btn btn-delete">Elimina</button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Failed Logins Table -->
-            <div class="table-container">
-                <div class="table-title">
-                    <h2>Tentativi di Login Falliti</h2>
-                    <a href="#">Vedi tutti</a>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Tentativi Falliti</th>
-                            <th>Ultimo Tentativo</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($failed_logins as $user): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($user['username']) ?></td>
+                            <td><?= $user['last_login'] ? date('d/m/Y H:i', strtotime($user['last_login'])) : 'Mai' ?></td>
                             <td><?= $user['failed_login_attempts'] ?></td>
-                            <td><?= $user['last_failed_login'] ? date('d/m/Y H:i', strtotime($user['last_failed_login'])) : 'N/A' ?></td>
                             <td>
                                 <span class="status-badge <?= $user['is_active'] ? 'status-active' : 'status-inactive' ?>">
                                     <?= $user['is_active'] ? 'Attivo' : 'Inattivo' ?>
                                 </span>
                             </td>
                             <td>
-                                <button class="action-btn btn-edit">Sblocca</button>
-                                <button class="action-btn btn-delete">Disattiva</button>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                    <input type="hidden" name="status" value="<?= $user['is_active'] ? '0' : '1' ?>">
+                                    <button type="submit" name="update_user_status" class="action-btn btn-edit">
+                                        <?= $user['is_active'] ? 'Disattiva' : 'Attiva' ?>
+                                    </button>
+                                </form>
+                                <?php if ($user['failed_login_attempts'] > 0): ?>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                    <button type="submit" name="reset_login_attempts" class="action-btn btn-edit">
+                                        Sblocca
+                                    </button>
+                                </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -468,4 +364,4 @@ $failed_logins = $stmt->fetchAll();
         </main>
     </div>
 </body>
-</html>
+</html> 
