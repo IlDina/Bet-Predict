@@ -45,6 +45,7 @@ $failed_logins = $stmt->fetchAll();
     <title>Admin Dashboard - BetPredict</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -56,6 +57,9 @@ $failed_logins = $stmt->fetchAll();
             --light-bg: #2d2d2d;
             --text-color: #ffffff;
             --text-muted: #b3b3b3;
+            --card-bg: #2d2d2d;
+            --border-color: #404040;
+            --hover-bg: #404040;
         }
 
         * {
@@ -84,12 +88,16 @@ $failed_logins = $stmt->fetchAll();
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
 
         .sidebar-header {
             display: flex;
             align-items: center;
             margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .sidebar-header img {
@@ -136,6 +144,7 @@ $failed_logins = $stmt->fetchAll();
             flex: 1;
             margin-left: 250px;
             padding: 2rem;
+            transition: all 0.3s ease;
         }
 
         .header {
@@ -143,6 +152,8 @@ $failed_logins = $stmt->fetchAll();
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .page-title {
@@ -160,6 +171,7 @@ $failed_logins = $stmt->fetchAll();
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .logout-btn {
@@ -170,6 +182,9 @@ $failed_logins = $stmt->fetchAll();
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .logout-btn:hover {
@@ -185,12 +200,18 @@ $failed_logins = $stmt->fetchAll();
         }
 
         .stat-card {
-            background-color: var(--light-bg);
+            background-color: var(--card-bg);
             padding: 1.5rem;
             border-radius: 12px;
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .stat-icon {
@@ -208,7 +229,7 @@ $failed_logins = $stmt->fetchAll();
         .stat-icon.new { background-color: rgba(241, 196, 15, 0.2); color: var(--warning-color); }
 
         .stat-info h3 {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
@@ -219,24 +240,51 @@ $failed_logins = $stmt->fetchAll();
 
         /* Tables */
         .table-container {
-            background-color: var(--light-bg);
+            background-color: var(--card-bg);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
         }
 
         .table-title {
             font-size: 1.2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            font-weight: 600;
         }
 
-        .table-title a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-box {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            width: 250px;
+        }
+
+        .export-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background-color: #2980b9;
         }
 
         table {
@@ -247,7 +295,7 @@ $failed_logins = $stmt->fetchAll();
         th, td {
             padding: 1rem;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
@@ -280,6 +328,7 @@ $failed_logins = $stmt->fetchAll();
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.8rem;
+            margin-right: 0.5rem;
         }
 
         .btn-edit {
@@ -300,6 +349,84 @@ $failed_logins = $stmt->fetchAll();
         .btn-delete:hover {
             background-color: var(--danger-color);
             color: white;
+        }
+
+        /* Charts */
+        .chart-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .sidebar.active {
+                width: 250px;
+                padding: 1.5rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-actions {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
+
+        /* Notifications */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -326,12 +453,6 @@ $failed_logins = $stmt->fetchAll();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="admin-statistics.php" class="nav-link">
-                            <i class="fas fa-chart-line"></i>
-                            Statistiche
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="admin-activities.php" class="nav-link">
                             <i class="fas fa-futbol"></i>
                             Attività
@@ -352,7 +473,6 @@ $failed_logins = $stmt->fetchAll();
             <header class="header">
                 <h1 class="page-title">Dashboard</h1>
                 <div class="user-info">
-                    <img src="admin-avatar.png" alt="Admin Avatar">
                     <form action="admin-login.php" method="post">
                         <button type="submit" name="logout" class="logout-btn">
                             <i class="fas fa-sign-out-alt"></i> Logout
@@ -394,9 +514,14 @@ $failed_logins = $stmt->fetchAll();
 
             <!-- Recent Users Table -->
             <div class="table-container">
-                <div class="table-title">
-                    <h2>Ultimi Utenti Registrati</h2>
-                    <a href="#">Vedi tutti</a>
+                <div class="table-header">
+                    <h2 class="table-title">Ultimi Utenti Registrati</h2>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Cerca utenti...">
+                        <button class="export-btn">
+                            <i class="fas fa-download"></i> Esporta
+                        </button>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -420,8 +545,12 @@ $failed_logins = $stmt->fetchAll();
                                 </span>
                             </td>
                             <td>
-                                <button class="action-btn btn-edit">Modifica</button>
-                                <button class="action-btn btn-delete">Elimina</button>
+                                <button class="action-btn btn-edit" onclick="editUser(<?= $user['id'] ?>)">
+                                    <i class="fas fa-edit"></i> Modifica
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deleteUser(<?= $user['id'] ?>)">
+                                    <i class="fas fa-trash"></i> Elimina
+                                </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -431,9 +560,14 @@ $failed_logins = $stmt->fetchAll();
 
             <!-- Failed Logins Table -->
             <div class="table-container">
-                <div class="table-title">
-                    <h2>Tentativi di Login Falliti</h2>
-                    <a href="#">Vedi tutti</a>
+                <div class="table-header">
+                    <h2 class="table-title">Tentativi di Login Falliti</h2>
+                    <div class="table-actions">
+                        <input type="text" class="search-box" placeholder="Cerca utenti...">
+                        <button class="export-btn">
+                            <i class="fas fa-download"></i> Esporta
+                        </button>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -457,8 +591,12 @@ $failed_logins = $stmt->fetchAll();
                                 </span>
                             </td>
                             <td>
-                                <button class="action-btn btn-edit">Sblocca</button>
-                                <button class="action-btn btn-delete">Disattiva</button>
+                                <button class="action-btn btn-edit" onclick="unlockUser(<?= $user['id'] ?>)">
+                                    <i class="fas fa-lock-open"></i> Sblocca
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deactivateUser(<?= $user['id'] ?>)">
+                                    <i class="fas fa-user-slash"></i> Disattiva
+                                </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -467,5 +605,85 @@ $failed_logins = $stmt->fetchAll();
             </div>
         </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        // Search functionality
+        document.querySelectorAll('.search-box').forEach(searchBox => {
+            searchBox.addEventListener('input', function(e) {
+                const searchText = e.target.value.toLowerCase();
+                const table = this.closest('.table-container').querySelector('tbody');
+                const rows = table.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchText) ? '' : 'none';
+                });
+            });
+        });
+
+        // Export functionality
+        document.querySelectorAll('.export-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const table = this.closest('.table-container').querySelector('table');
+                const rows = table.querySelectorAll('tr');
+                let csv = [];
+
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+                csv.push(headers.join(','));
+
+                // Get data
+                rows.forEach(row => {
+                    if (row.style.display !== 'none') {
+                        const cells = Array.from(row.querySelectorAll('td')).map(td => {
+                            // Remove action buttons
+                            if (td.querySelector('.action-btn')) {
+                                return '';
+                            }
+                            return td.textContent;
+                        });
+                        csv.push(cells.join(','));
+                    }
+                });
+
+                // Create and download file
+                const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', 'export.csv');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+        });
+
+        // User management functions
+        function editUser(id) {
+            // Implement edit user functionality
+            console.log('Edit user:', id);
+        }
+
+        function deleteUser(id) {
+            if (confirm('Sei sicuro di voler eliminare questo utente?')) {
+                // Implement delete user functionality
+                console.log('Delete user:', id);
+            }
+        }
+
+        function unlockUser(id) {
+            // Implement unlock user functionality
+            console.log('Unlock user:', id);
+        }
+
+        function deactivateUser(id) {
+            if (confirm('Sei sicuro di voler disattivare questo utente?')) {
+                // Implement deactivate user functionality
+                console.log('Deactivate user:', id);
+            }
+        }
+    </script>
 </body>
 </html>

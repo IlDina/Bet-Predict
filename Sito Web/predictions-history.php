@@ -30,6 +30,18 @@ $completed_predictions = $stmt->fetchAll();
 $total_predictions = count($completed_predictions);
 $won_predictions = count(array_filter($completed_predictions, fn($p) => $p['status'] === 'won'));
 $win_rate = $total_predictions > 0 ? round(($won_predictions / $total_predictions) * 100, 2) : 0;
+
+// Add this after the PHP session check
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["reset_history"])) {
+    try {
+        $stmt = $conn->prepare("DELETE FROM predictions WHERE status IN ('won', 'lost')");
+        $stmt->execute();
+        header("Location: predictions-history.php?reset=success");
+        exit();
+    } catch(PDOException $e) {
+        $error = "Errore durante il reset dello storico";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -452,6 +464,151 @@ $win_rate = $total_predictions > 0 ? round(($won_predictions / $total_prediction
                 grid-template-columns: 1fr;
             }
         }
+
+        .predictions-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .predictions-table th {
+            background: var(--primary-color);
+            color: var(--text-color);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .predictions-table td {
+            padding: 1rem;
+            background: var(--light-bg);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .predictions-table tr {
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .predictions-table tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .predictions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-won {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-lost {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .type-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .type-free {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary-color);
+        }
+
+        .type-premium {
+            background-color: rgba(241, 196, 15, 0.2);
+            color: var(--warning-color);
+        }
+
+        .table-container {
+            background: var(--dark-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-title i {
+            color: var(--secondary-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .reset-history-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .reset-history-btn:hover {
+            background: #c0392b;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary-color);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            border: 1px solid var(--secondary-color);
+        }
     </style>
 </head>
 <body>
@@ -474,12 +631,6 @@ $win_rate = $total_predictions > 0 ? round(($won_predictions / $total_prediction
                         <a href="admin-users.php" class="nav-link">
                             <i class="fas fa-users"></i>
                             Utenti
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="admin-statistics.php" class="nav-link">
-                            <i class="fas fa-chart-line"></i>
-                            Statistiche
                         </a>
                     </li>
                     <li class="nav-item">
@@ -578,6 +729,108 @@ $win_rate = $total_predictions > 0 ? round(($won_predictions / $total_prediction
                 </div>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Update the table structure -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">
+                        <i class="fas fa-history"></i>
+                        Storico Pronostici
+                    </h2>
+                    <div class="table-actions">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-list"></i>
+                            Tutti
+                        </button>
+                        <button class="filter-btn" data-filter="won">
+                            <i class="fas fa-check"></i>
+                            Vinti
+                        </button>
+                        <button class="filter-btn" data-filter="lost">
+                            <i class="fas fa-times"></i>
+                            Persi
+                        </button>
+                        <form method="post" onsubmit="return confirm('Sei sicuro di voler eliminare tutti i pronostici dallo storico?');">
+                            <button type="submit" name="reset_history" class="reset-history-btn">
+                                <i class="fas fa-trash-alt"></i>
+                                Reset Storico
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <table class="predictions-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Sport</th>
+                            <th>Competizione</th>
+                            <th>Match</th>
+                            <th>Pronostico</th>
+                            <th>Quota</th>
+                            <th>Tipo</th>
+                            <th>Risultato</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($completed_predictions as $prediction): ?>
+                            <tr>
+                                <td><?= date('d/m/Y H:i', strtotime($prediction['created_at'])) ?></td>
+                                <td><?= ucfirst(htmlspecialchars($prediction['sport'])) ?></td>
+                                <td><?= htmlspecialchars($prediction['league']) ?></td>
+                                <td><?= htmlspecialchars($prediction['match']) ?></td>
+                                <td><?= htmlspecialchars($prediction['prediction']) ?></td>
+                                <td><?= $prediction['odds'] ?></td>
+                                <td>
+                                    <span class="type-badge type-<?= $prediction['type'] ?>">
+                                        <?= ucfirst($prediction['type']) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-<?= $prediction['status'] ?>">
+                                        <?= ucfirst($prediction['status']) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add this JavaScript before the closing body tag -->
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                const tableRows = document.querySelectorAll('.predictions-table tbody tr');
+
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Remove active class from all buttons
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        // Add active class to clicked button
+                        this.classList.add('active');
+
+                        const filter = this.dataset.filter;
+                        
+                        tableRows.forEach(row => {
+                            if (filter === 'all') {
+                                row.style.display = '';
+                            } else {
+                                const status = row.querySelector('.status-badge').classList.contains(`status-${filter}`);
+                                row.style.display = status ? '' : 'none';
+                            }
+                        });
+                    });
+                });
+            });
+            </script>
+
+            <!-- Add this after the error/success alerts -->
+            <?php if (isset($_GET['reset']) && $_GET['reset'] == 'success'): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    Storico pronostici eliminato con successo!
+                </div>
+            <?php endif; ?>
         </main>
     </div>
 </body>
