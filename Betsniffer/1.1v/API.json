@@ -1,0 +1,401 @@
+{
+    "endpoints": [
+        {
+            "name": "myPrivateApiKey",
+            "api_key": "c07e985e576e40cb9c9946cd0df41abc",
+            "description": "La tua chiave privata per autenticarti sulle API di football-data.org."
+        },
+        {
+            "name": "SerieA_Matches_2024",
+            "endpoint": "https://api.football-data.org/v4/competitions/SA/matches?season=2024",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Serie A stagione 2024/25."
+        },
+        {
+            "name": "SerieA_Standings_2024",
+            "endpoint": "https://api.football-data.org/v4/competitions/SA/standings?season=2024",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica aggiornata della Serie A stagione 2024/25."
+        },
+        {
+            "name": "SerieA_Teams_2024",
+            "endpoint": "https://api.football-data.org/v4/competitions/SA/teams?season=2024",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Serie A stagione 2024/25."
+        },
+        {
+            "name": "SerieA_Scorers_2024",
+            "endpoint": "https://api.football-data.org/v4/competitions/SA/scorers?season=2024",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Serie A stagione 2024/25."
+        },
+        {
+            "name": "SerieA_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/SA",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Serie A."
+        },
+        {
+            "name": "SerieA_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Serie A dato il matchId."
+        },
+        {
+            "name": "SerieA_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Serie A dato il teamId."
+        },
+        {
+            "name": "ChampionsLeague_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/CL/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della UEFA Champions League."
+        },
+        {
+            "name": "ChampionsLeague_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/CL/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della UEFA Champions League."
+        },
+        {
+            "name": "ChampionsLeague_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/CL/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla UEFA Champions League."
+        },
+        {
+            "name": "ChampionsLeague_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/CL/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della UEFA Champions League."
+        },
+        {
+            "name": "ChampionsLeague_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/CL",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla UEFA Champions League."
+        },
+        {
+            "name": "ChampionsLeague_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Champions League dato il matchId."
+        },
+        {
+            "name": "ChampionsLeague_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Champions League dato il teamId."
+        },
+        {
+            "name": "PremierLeague_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/PL/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Premier League inglese."
+        },
+        {
+            "name": "PremierLeague_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/PL/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Premier League inglese."
+        },
+        {
+            "name": "PremierLeague_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/PL/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Premier League inglese."
+        },
+        {
+            "name": "PremierLeague_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/PL/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Premier League inglese."
+        },
+        {
+            "name": "PremierLeague_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/PL",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Premier League inglese."
+        },
+        {
+            "name": "PremierLeague_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Premier League dato il matchId."
+        },
+        {
+            "name": "PremierLeague_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Premier League dato il teamId."
+        },
+        {
+            "name": "Bundesliga_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/BL1/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Bundesliga tedesca."
+        },
+        {
+            "name": "Bundesliga_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/BL1/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Bundesliga tedesca."
+        },
+        {
+            "name": "Bundesliga_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/BL1/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Bundesliga tedesca."
+        },
+        {
+            "name": "Bundesliga_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/BL1/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Bundesliga tedesca."
+        },
+        {
+            "name": "Bundesliga_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/BL1",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Bundesliga tedesca."
+        },
+        {
+            "name": "Bundesliga_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Bundesliga dato il matchId."
+        },
+        {
+            "name": "Bundesliga_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Bundesliga dato il teamId."
+        },
+        {
+            "name": "LaLiga_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/PD/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Liga spagnola."
+        },
+        {
+            "name": "LaLiga_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/PD/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Liga spagnola."
+        },
+        {
+            "name": "LaLiga_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/PD/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Liga spagnola."
+        },
+        {
+            "name": "LaLiga_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/PD/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Liga spagnola."
+        },
+        {
+            "name": "LaLiga_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/PD",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Liga spagnola."
+        },
+        {
+            "name": "LaLiga_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Liga dato il matchId."
+        },
+        {
+            "name": "LaLiga_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Liga dato il teamId."
+        },
+        {
+            "name": "Ligue1_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/FL1/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Ligue 1 francese."
+        },
+        {
+            "name": "Ligue1_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/FL1/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Ligue 1 francese."
+        },
+        {
+            "name": "Ligue1_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/FL1/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Ligue 1 francese."
+        },
+        {
+            "name": "Ligue1_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/FL1/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Ligue 1 francese."
+        },
+        {
+            "name": "Ligue1_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/FL1",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Ligue 1 francese."
+        },
+        {
+            "name": "Ligue1_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Ligue 1 dato il matchId."
+        },
+        {
+            "name": "Ligue1_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Ligue 1 dato il teamId."
+        },
+        {
+            "name": "Eredivisie_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/DED/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Eredivisie olandese."
+        },
+        {
+            "name": "Eredivisie_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/DED/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Eredivisie olandese."
+        },
+        {
+            "name": "Eredivisie_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/DED/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Eredivisie olandese."
+        },
+        {
+            "name": "Eredivisie_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/DED/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Eredivisie olandese."
+        },
+        {
+            "name": "Eredivisie_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/DED",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Eredivisie olandese."
+        },
+        {
+            "name": "Eredivisie_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Eredivisie dato il matchId."
+        },
+        {
+            "name": "Eredivisie_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Eredivisie dato il teamId."
+        },
+        {
+            "name": "PrimeiraLiga_Matches",
+            "endpoint": "https://api.football-data.org/v4/competitions/PPL/matches",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Tutte le partite della Primeira Liga portoghese."
+        },
+        {
+            "name": "PrimeiraLiga_Standings",
+            "endpoint": "https://api.football-data.org/v4/competitions/PPL/standings",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica della Primeira Liga portoghese."
+        },
+        {
+            "name": "PrimeiraLiga_Teams",
+            "endpoint": "https://api.football-data.org/v4/competitions/PPL/teams",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Lista delle squadre partecipanti alla Primeira Liga portoghese."
+        },
+        {
+            "name": "PrimeiraLiga_Scorers",
+            "endpoint": "https://api.football-data.org/v4/competitions/PPL/scorers",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Classifica marcatori della Primeira Liga portoghese."
+        },
+        {
+            "name": "PrimeiraLiga_Competition_Info",
+            "endpoint": "https://api.football-data.org/v4/competitions/PPL",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Informazioni generali sulla Primeira Liga portoghese."
+        },
+        {
+            "name": "PrimeiraLiga_Match_Details",
+            "endpoint": "https://api.football-data.org/v4/matches/{matchId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola partita di Primeira Liga dato il matchId."
+        },
+        {
+            "name": "PrimeiraLiga_Team_Details",
+            "endpoint": "https://api.football-data.org/v4/teams/{teamId}",
+            "method": "GET",
+            "headers": { "X-Auth-Token": "API_KEY" },
+            "description": "Dettagli di una singola squadra di Primeira Liga dato il teamId."
+        }
+    ]
+}
